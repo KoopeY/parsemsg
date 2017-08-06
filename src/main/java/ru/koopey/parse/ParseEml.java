@@ -1,6 +1,5 @@
 package ru.koopey.parse;
 
-import com.sun.mail.util.BASE64DecoderStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
 import ru.koopey.entity.EmailAttachment;
@@ -10,7 +9,6 @@ import javax.mail.BodyPart;
 import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.Session;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -45,14 +43,6 @@ public class ParseEml implements IMessage {
 
                 InputStream is = part.getInputStream();
 
-                /*File file = new File(fileName);
-                FileOutputStream fos = new FileOutputStream(file);
-                byte[] buf = new byte[4096];
-                int bytesRead;
-                while((bytesRead = is.read(buf))!=-1) {
-                    fos.write(buf, 0, bytesRead);
-                }
-                fos.close();*/
                 String base64 = new String(Base64.encodeBase64(IOUtils.toByteArray(is)), StandardCharsets.US_ASCII);
 
                 emailResult.addEmailAttachment(new EmailAttachment(fileName, base64));
@@ -64,11 +54,15 @@ public class ParseEml implements IMessage {
         Calendar sentDate = Calendar.getInstance();
         sentDate.setTime(message.getSentDate());
 
-        String fromEmail = message.getFrom()[0].toString();
-        String toEmail = message.getReplyTo()[0].toString();
+        String fromEmail = "";
+        String toEmail = "";
 
-        fromEmail = fromEmail.substring(fromEmail.indexOf("<") + 1, fromEmail.indexOf(">"));
-        toEmail = toEmail.substring(toEmail.indexOf("<") + 1, toEmail.indexOf(">"));
+        if (message.getFrom().length > 0) {
+            fromEmail = message.getFrom()[0].toString();
+        }
+        if (message.getReplyTo().length > 0) {
+            toEmail = message.getReplyTo()[0].toString();
+        }
 
         emailResult.setBody(body);
         emailResult.setSubject(subject);

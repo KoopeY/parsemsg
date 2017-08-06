@@ -1,6 +1,5 @@
 package ru.koopey.parse;
 
-import com.sun.mail.imap.IMAPBodyPart;
 import org.springframework.web.multipart.MultipartFile;
 import ru.koopey.entity.EmailResult;
 
@@ -33,9 +32,11 @@ public class Parse {
             try {
                 emailResult = parseMessage.parseMsg(is);
             } catch(Exception e) {
-                System.out.println("Error while parse msg " + e.getCause());
+                System.out.println("Error while parse msg " + e.getMessage());
             }
 
+        } else {
+            System.out.println("file.length = 0");
         }
 
         return emailResult;

@@ -1,6 +1,5 @@
 package ru.koopey.parse;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.poi.hsmf.MAPIMessage;
 import org.apache.poi.hsmf.datatypes.AttachmentChunks;
 import org.apache.tomcat.util.codec.binary.Base64;

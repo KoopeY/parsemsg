@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 
 public class EmailResult {
@@ -75,7 +74,6 @@ public class EmailResult {
 
     public String toString() {
         ObjectMapper objectMapper = new ObjectMapper();
-
         try {
             return objectMapper.writeValueAsString(this);
         } catch(Exception e) {
