@@ -1,39 +1,41 @@
 package ru.koopey.parse;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import org.apache.poi.hsmf.MAPIMessage;
-import org.apache.poi.hsmf.datatypes.AttachmentChunks;
+import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
 import org.apache.tomcat.util.codec.binary.Base64;
 import ru.koopey.entity.EmailAttachment;
 import ru.koopey.entity.EmailResult;
 
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-
 public class ParseMsg implements IMessage {
 
-    public ParseMsg() {
-    }
+  public ParseMsg() {
+  }
 
-    @Override
-    public EmailResult parseMsg(InputStream inputStream) throws Exception {
-        EmailResult emailResult = new EmailResult();
-        MAPIMessage msg = new MAPIMessage(inputStream);
-        msg.guess7BitEncoding();
+  @Override
+  public EmailResult parseMsg(InputStream inputStream) throws IOException, ChunkNotFoundException {
+    MAPIMessage msg = new MAPIMessage(inputStream);
+    msg.guess7BitEncoding();
 
-        emailResult.setSubject(msg.getSubject());
-        emailResult.setBody(msg.getTextBody());
-        emailResult.setFromEmail(msg.getRecipientEmailAddress());
-        emailResult.setToEmail(msg.getRecipientEmailAddress());
-        emailResult.setDate(msg.getMessageDate());
+    var attachments = Arrays.stream(msg.getAttachmentFiles())
+        .map(attachment ->
+            new EmailAttachment(
+                attachment.getAttachLongFileName().getValue(),
+                new String(Base64.encodeBase64(attachment.getAttachData().getValue()), StandardCharsets.US_ASCII)
+            )
+        )
+        .toList();
 
-        for (AttachmentChunks attachment : msg.getAttachmentFiles()) {
-            byte[] fileContent = attachment.attachData.getValue();
-            String fileName = attachment.attachLongFileName.toString();
-            String base64 = new String(Base64.encodeBase64(fileContent), StandardCharsets.US_ASCII);
-
-            emailResult.addEmailAttachment(new EmailAttachment(fileName, base64));
-        }
-
-        return emailResult;
-    }
+    return new EmailResult(
+        msg.getSubject(),
+        msg.getTextBody(),
+        msg.getRecipientEmailAddress(),
+        msg.getRecipientEmailAddress(),
+        msg.getMessageDate(),
+        attachments
+    );
+  }
 }
