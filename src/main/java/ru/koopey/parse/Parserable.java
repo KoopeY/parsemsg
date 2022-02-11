@@ -6,6 +6,9 @@ import javax.mail.MessagingException;
 import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
 import ru.koopey.entity.EmailResult;
 
-public interface IMessage {
+public interface Parserable {
+
   EmailResult parseMsg(InputStream inputStream) throws IOException, ChunkNotFoundException, MessagingException;
+
+  Extensions extension();
 }
