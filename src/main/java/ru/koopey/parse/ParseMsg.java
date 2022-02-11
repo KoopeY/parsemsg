@@ -7,13 +7,12 @@ import java.util.Arrays;
 import org.apache.poi.hsmf.MAPIMessage;
 import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.stereotype.Component;
 import ru.koopey.entity.EmailAttachment;
 import ru.koopey.entity.EmailResult;
 
-public class ParseMsg implements IMessage {
-
-  public ParseMsg() {
-  }
+@Component
+public class ParseMsg implements Parserable {
 
   @Override
   public EmailResult parseMsg(InputStream inputStream) throws IOException, ChunkNotFoundException {
@@ -37,5 +36,10 @@ public class ParseMsg implements IMessage {
         msg.getMessageDate(),
         attachments
     );
+  }
+
+  @Override
+  public Extensions extension() {
+    return Extensions.MSG;
   }
 }

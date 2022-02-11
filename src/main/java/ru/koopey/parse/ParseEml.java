@@ -4,24 +4,34 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.apache.commons.io.IOUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.springframework.stereotype.Component;
 import ru.koopey.entity.EmailAttachment;
 import ru.koopey.entity.EmailResult;
 
-public class ParseEml implements IMessage {
+@Component
+public class ParseEml implements Parserable {
 
-  public ParseEml() {
-
+  private String getEmailAddress(Address address) {
+    if (address instanceof InternetAddress) {
+      return ((InternetAddress) address).getAddress();
+    } else {
+      return address.toString();
+    }
   }
 
   @Override
@@ -41,11 +51,11 @@ public class ParseEml implements IMessage {
             .replace("=?windows-1251?B?", "")
             .replace("?=", "");
         byte[] valueDecoded = Base64.decodeBase64(encodeFileName.getBytes());
-        String fileName = new String(valueDecoded, "windows-1251");
+        String fileName = new String(valueDecoded, StandardCharsets.UTF_8);
 
         InputStream is = part.getInputStream();
 
-        String base64 = new String(Base64.encodeBase64(IOUtils.toByteArray(is)), StandardCharsets.US_ASCII);
+        String base64 = new String(Base64.encodeBase64(IOUtils.toByteArray(is)), StandardCharsets.UTF_8);
 
         attachments.add(new EmailAttachment(fileName, base64));
       } else {
@@ -56,16 +66,21 @@ public class ParseEml implements IMessage {
     Calendar sentDate = Calendar.getInstance();
     sentDate.setTime(message.getSentDate());
 
-    String fromEmail = "";
-    String toEmail = "";
+    String fromEmail = Arrays.stream(message.getFrom())
+        .filter(address -> address instanceof InternetAddress)
+        .map(this::getEmailAddress)
+        .collect(Collectors.joining(","));
 
-    if (message.getFrom().length > 0) {
-      fromEmail = message.getFrom()[0].toString();
-    }
-    if (message.getReplyTo().length > 0) {
-      toEmail = message.getReplyTo()[0].toString();
-    }
+    String toEmail = Arrays.stream(message.getReplyTo())
+        .filter(address -> address instanceof InternetAddress)
+        .map(this::getEmailAddress)
+        .collect(Collectors.joining(","));
 
     return new EmailResult(body, subject, fromEmail, toEmail, sentDate, attachments);
+  }
+
+  @Override
+  public Extensions extension() {
+    return Extensions.EML;
   }
 }
