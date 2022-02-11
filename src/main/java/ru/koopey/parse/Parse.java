@@ -1,44 +1,38 @@
 package ru.koopey.parse;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Optional;
+import javax.mail.MessagingException;
+import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
+import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.koopey.entity.EmailResult;
 
-import javax.mail.MessagingException;
-import java.io.*;
-
+@Service
 public class Parse {
 
-    public Parse() {
+  public EmailResult parseFiles(MultipartFile[] files) throws IOException, ChunkNotFoundException, MessagingException {
+
+    IMessage parseMessage;
+    if (files.length > 0) {
+      String[] fileFormat = Optional.ofNullable(files[0].getOriginalFilename())
+          .map(str -> str.split("\\."))
+          .orElseThrow(FileNotFoundException::new);
+
+      InputStream is = new ByteArrayInputStream(files[0].getBytes());
+
+      if ("msg".equalsIgnoreCase(fileFormat[fileFormat.length - 1])) {
+        parseMessage = new ParseMsg();
+      } else {
+        parseMessage = new ParseEml();
+      }
+
+      return parseMessage.parseMsg(is);
+    } else {
+      throw new FileNotFoundException();
     }
-
-    public EmailResult parseFiles(MultipartFile[] file) throws MessagingException, IOException {
-
-        EmailResult emailResult = new EmailResult();
-        IMessage parseMessage;
-        if (file.length > 0) {
-            String[] fileFormat = file[0].getOriginalFilename().split("\\.");
-
-            InputStream is = new ByteArrayInputStream(file[0].getBytes());
-
-            switch(fileFormat[fileFormat.length - 1].toLowerCase()) {
-                case "msg":
-                    parseMessage = new ParseMsg();
-                    break;
-                default:
-                    parseMessage = new ParseEml();
-                    break;
-            }
-
-            try {
-                emailResult = parseMessage.parseMsg(is);
-            } catch(Exception e) {
-                System.out.println("Error while parse msg " + e.getMessage());
-            }
-
-        } else {
-            System.out.println("file.length = 0");
-        }
-
-        return emailResult;
-    }
+  }
 }
