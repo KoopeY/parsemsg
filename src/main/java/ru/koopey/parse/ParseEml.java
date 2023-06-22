@@ -27,8 +27,8 @@ import ru.koopey.entity.EmailResult;
 public class ParseEml implements Parserable {
 
   private String getEmailAddress(Address address) {
-    if (address instanceof InternetAddress) {
-      return ((InternetAddress) address).getAddress();
+    if (address instanceof InternetAddress internetAddress) {
+      return internetAddress.getAddress();
     } else {
       return address.toString();
     }
@@ -50,12 +50,12 @@ public class ParseEml implements Parserable {
         String encodeFileName = part.getFileName()
             .replace("=?windows-1251?B?", "")
             .replace("?=", "");
-        byte[] valueDecoded = Base64.decodeBase64(encodeFileName.getBytes());
+        byte[] valueDecoded = Base64.decodeBase64(encodeFileName);
         String fileName = new String(valueDecoded, StandardCharsets.UTF_8);
 
         InputStream is = part.getInputStream();
 
-        String base64 = new String(Base64.encodeBase64(IOUtils.toByteArray(is)), StandardCharsets.UTF_8);
+        String base64 = Base64.encodeBase64String(IOUtils.toByteArray(is));
 
         attachments.add(new EmailAttachment(fileName, base64));
       } else {

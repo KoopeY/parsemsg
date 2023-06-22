@@ -23,7 +23,7 @@ public class ParseMsg implements Parserable {
         .map(attachment ->
             new EmailAttachment(
                 attachment.getAttachLongFileName().getValue(),
-                new String(Base64.encodeBase64(attachment.getAttachData().getValue()), StandardCharsets.US_ASCII)
+                new String(Base64.encodeBase64(attachment.getAttachData().getValue(), false), StandardCharsets.US_ASCII)
             )
         )
         .toList();
