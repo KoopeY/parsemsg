@@ -55,16 +55,15 @@ public class ParseEml implements Parserable {
 
         final var is = part.getInputStream();
 
-        final var base64 = Base64.encodeBase64String(IOUtils.toByteArray(is));
+        final var fileContent = Base64.encodeBase64String(IOUtils.toByteArray(is));
 
-        attachments.add(new EmailAttachment(fileName, base64));
+        attachments.add(new EmailAttachment(fileName, fileContent));
       } else {
         body = String.valueOf(part.getContent());
       }
     }
 
-    final var sentDate = Calendar.getInstance();
-    sentDate.setTime(message.getSentDate());
+    final var sentDate = message.getSentDate().toInstant();
 
     final var fromEmail = Arrays.stream(message.getFrom())
         .filter(address -> address instanceof InternetAddress)

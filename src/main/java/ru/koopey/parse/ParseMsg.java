@@ -33,7 +33,7 @@ public class ParseMsg implements Parserable {
         msg.getTextBody(),
         msg.getRecipientEmailAddress(),
         msg.getRecipientEmailAddress(),
-        msg.getMessageDate(),
+        msg.getMessageDate().toInstant(),
         attachments
     );
   }
