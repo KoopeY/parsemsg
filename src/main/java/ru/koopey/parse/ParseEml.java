@@ -36,26 +36,26 @@ public class ParseEml implements Parserable {
 
   @Override
   public EmailResult parseMsg(InputStream inputStream) throws IOException, MessagingException {
-    Session s = Session.getDefaultInstance(new Properties());
-    MimeMessage message = new MimeMessage(s, inputStream);
+    final var s = Session.getDefaultInstance(new Properties());
+    final var message = new MimeMessage(s, inputStream);
 
-    String subject = message.getSubject();
-    String body = "";
+    final var subject = message.getSubject();
+    var body = "";
 
-    List<EmailAttachment> attachments = new ArrayList<>();
-    Multipart multiPart = (Multipart) message.getContent();
-    for (int i = 0; i < multiPart.getCount(); i++) {
-      BodyPart part = multiPart.getBodyPart(i);
+    final List<EmailAttachment> attachments = new ArrayList<>();
+    final var multiPart = (Multipart) message.getContent();
+    for (var i = 0; i < multiPart.getCount(); i++) {
+      final var part = multiPart.getBodyPart(i);
       if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
-        String encodeFileName = part.getFileName()
+        final var encodeFileName = part.getFileName()
             .replace("=?windows-1251?B?", "")
             .replace("?=", "");
-        byte[] valueDecoded = Base64.decodeBase64(encodeFileName);
-        String fileName = new String(valueDecoded, StandardCharsets.UTF_8);
+        final var valueDecoded = Base64.decodeBase64(encodeFileName);
+        final var fileName = new String(valueDecoded, StandardCharsets.UTF_8);
 
-        InputStream is = part.getInputStream();
+        final var is = part.getInputStream();
 
-        String base64 = Base64.encodeBase64String(IOUtils.toByteArray(is));
+        final var base64 = Base64.encodeBase64String(IOUtils.toByteArray(is));
 
         attachments.add(new EmailAttachment(fileName, base64));
       } else {
@@ -63,15 +63,15 @@ public class ParseEml implements Parserable {
       }
     }
 
-    Calendar sentDate = Calendar.getInstance();
+    final var sentDate = Calendar.getInstance();
     sentDate.setTime(message.getSentDate());
 
-    String fromEmail = Arrays.stream(message.getFrom())
+    final var fromEmail = Arrays.stream(message.getFrom())
         .filter(address -> address instanceof InternetAddress)
         .map(this::getEmailAddress)
         .collect(Collectors.joining(","));
 
-    String toEmail = Arrays.stream(message.getReplyTo())
+    final var toEmail = Arrays.stream(message.getReplyTo())
         .filter(address -> address instanceof InternetAddress)
         .map(this::getEmailAddress)
         .collect(Collectors.joining(","));

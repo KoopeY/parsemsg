@@ -16,10 +16,10 @@ public class ParseMsg implements Parserable {
 
   @Override
   public EmailResult parseMsg(InputStream inputStream) throws IOException, ChunkNotFoundException {
-    MAPIMessage msg = new MAPIMessage(inputStream);
+    final var msg = new MAPIMessage(inputStream);
     msg.guess7BitEncoding();
 
-    var attachments = Arrays.stream(msg.getAttachmentFiles())
+    final var attachments = Arrays.stream(msg.getAttachmentFiles())
         .map(attachment ->
             new EmailAttachment(
                 attachment.getAttachLongFileName().getValue(),
