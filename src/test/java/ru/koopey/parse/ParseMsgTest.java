@@ -16,7 +16,7 @@ public class ParseMsgTest {
   private final ParseMsg parser = new ParseMsg();
 
   @Test
-  public void shouldParseEmail() throws IOException, ChunkNotFoundException {
+  public void parsesEmail() throws IOException, ChunkNotFoundException {
     var resource = getClass().getClassLoader().getResource("email.msg");
     InputStream is = new FileInputStream(resource.getFile());
 
