@@ -1,15 +1,16 @@
 package ru.koopey.parse;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.poi.hsmf.MAPIMessage;
+import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
+import org.springframework.stereotype.Component;
+import ru.koopey.entity.EmailAttachment;
+import ru.koopey.entity.EmailResult;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import org.apache.poi.hsmf.MAPIMessage;
-import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
-import org.apache.tomcat.util.codec.binary.Base64;
-import org.springframework.stereotype.Component;
-import ru.koopey.entity.EmailAttachment;
-import ru.koopey.entity.EmailResult;
 
 @Component
 public class ParseMsg implements Parserable {

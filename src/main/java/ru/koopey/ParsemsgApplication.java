@@ -1,12 +1,13 @@
 package ru.koopey;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import static org.springframework.boot.SpringApplication.run;
 
 @SpringBootApplication
 public class ParsemsgApplication {
 
-  public static void main(String[] args) {
-    SpringApplication.run(ParsemsgApplication.class, args);
+  static void main() {
+    run(ParsemsgApplication.class);
   }
 }

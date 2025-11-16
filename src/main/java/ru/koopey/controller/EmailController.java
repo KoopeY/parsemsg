@@ -1,7 +1,5 @@
 package ru.koopey.controller;
 
-import java.io.IOException;
-import javax.mail.MessagingException;
 import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +7,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import ru.koopey.parse.Parse;
+
+import javax.mail.MessagingException;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/email")

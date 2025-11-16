@@ -1,10 +1,11 @@
 package ru.koopey.parse;
 
-import java.io.IOException;
-import java.io.InputStream;
-import javax.mail.MessagingException;
 import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
 import ru.koopey.entity.EmailResult;
+
+import javax.mail.MessagingException;
+import java.io.IOException;
+import java.io.InputStream;
 
 public interface Parserable {
 
